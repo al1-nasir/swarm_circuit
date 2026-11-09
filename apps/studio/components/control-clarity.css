@@ -1,0 +1,105 @@
+.containment-panel .panel-title p {
+  font-size: 13px;
+  line-height: 1.7;
+}
+.containment-panel .policy-record p {
+  font-size: 13px;
+  line-height: 1.7;
+}
+.containment-panel .payment-table td,
+.containment-panel .payment-table th {
+  font-size: 13px;
+}
+.containment-panel .pause-host-note {
+  font-size: 12px;
+  line-height: 1.7;
+  margin: 10px 0;
+  color: var(--muted);
+}
+.containment-panel .pause-history-item {
+  padding: 18px 22px;
+  border-top: 1px solid var(--border);
+}
+.containment-panel .pause-history-item > summary {
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.6;
+}
+.containment-panel .pause-history-item > summary .muted {
+  font-weight: 400;
+}
+.containment-panel .pause-history-item .payment-table {
+  margin-top: 16px;
+}
+.containment-panel .pause-technical {
+  margin-top: 15px;
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.7;
+}
+.containment-panel .pause-technical summary {
+  cursor: pointer;
+  color: var(--text);
+}
+.containment-panel .pause-technical dl {
+  display: grid;
+  grid-template-columns: minmax(130px, 0.5fr) minmax(0, 1fr);
+  gap: 5px 20px;
+  margin-top: 12px;
+}
+.containment-panel .pause-technical dd {
+  overflow-wrap: anywhere;
+}
+.containment-panel .pause-history-footer {
+  padding: 16px 22px;
+  border-top: 1px solid var(--border);
+}
+.containment-dialog > .dialog-description {
+  font-size: 14px;
+  line-height: 1.7;
+}
+.containment-dialog .containment-preview > p {
+  font-size: 13px;
+  line-height: 1.7;
+}
+.containment-dialog .pause-target-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 20px;
+  font-size: 13px;
+  padding: 15px 0;
+}
+.containment-dialog .pause-target-summary strong {
+  font-weight: 600;
+}
+.control-dialog .technical-boundary {
+  margin-top: 16px;
+  font-size: 12px;
+  line-height: 1.7;
+  color: var(--muted);
+}
+.control-dialog .technical-boundary summary {
+  cursor: pointer;
+  color: var(--text);
+}
+.control-dialog .dialog-impact > p {
+  font-size: 14px;
+  line-height: 1.7;
+}
+.control-dialog .dialog-footnote {
+  font-size: 12px;
+  line-height: 1.6;
+}
+@media (max-width: 767px) {
+  .containment-panel .pause-history-item {
+    padding: 16px;
+  }
+  .containment-panel .pause-technical dl {
+    grid-template-columns: 1fr;
+    gap: 3px;
+  }
+  .containment-panel .pause-technical dd {
+    margin-bottom: 9px;
+  }
+}

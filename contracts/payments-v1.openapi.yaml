@@ -1,0 +1,552 @@
+openapi: 3.1.0
+info:
+  title: SwarmCircuit payment evidence and mock authority supplement
+  version: 0.4.0
+  description: Phase 4. SDK observations cannot establish approval or settlement.
+    Mock callbacks require an independent broker credential and simulation=true; they
+    establish simulation truth only. No signing or real payment replay endpoint exists.
+    Read responses are extensible metadata objects with root pagination and bounded
+    nested lists.
+paths:
+  /api/v1/projects/{project_id}/runs:
+    post:
+      summary: Create Run
+      operationId: createRun
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: project_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Project Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RunCreate'
+      responses:
+        '201':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Createrun
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      x-credential-role: SDK project
+    get:
+      summary: List Runs
+      operationId: listRuns
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: project_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Project Id
+      - name: cursor
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Cursor
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 100
+          minimum: 1
+          default: 25
+          title: Limit
+      - name: kind
+        in: query
+        required: false
+        schema:
+          enum:
+          - all
+          - workflow
+          - research
+          type: string
+          default: all
+          title: Kind
+      - name: include_diagnostics
+        in: query
+        required: false
+        schema:
+          type: boolean
+          default: true
+          title: Include Diagnostics
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Listruns
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      x-credential-role: SDK project or operator
+  /api/v1/runs/{run_id}/approvals:
+    get:
+      summary: Approvals
+      operationId: listApprovals
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: run_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Run Id
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 200
+          minimum: 1
+          default: 50
+          title: Limit
+      - name: cursor
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Cursor
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Listapprovals
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ControlProblem'
+          description: Unauthorized
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ControlProblem'
+          description: Not Found
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ControlProblem'
+          description: Conflict
+        '413':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ControlProblem'
+          description: Request Entity Too Large
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ControlProblem'
+          description: Unprocessable Entity
+        '503':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ControlProblem'
+          description: Service Unavailable
+      x-credential-role: SDK project or operator
+  /api/v1/runs/{run_id}/payments:
+    get:
+      summary: Payments
+      operationId: listPayments
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: run_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Run Id
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 200
+          minimum: 1
+          default: 50
+          title: Limit
+      - name: cursor
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Cursor
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Listpayments
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ControlProblem'
+          description: Unauthorized
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ControlProblem'
+          description: Not Found
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ControlProblem'
+          description: Conflict
+        '413':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ControlProblem'
+          description: Request Entity Too Large
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ControlProblem'
+          description: Unprocessable Entity
+        '503':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ControlProblem'
+          description: Service Unavailable
+      x-credential-role: SDK project or operator
+  /api/v1/mock/runs/{run_id}/approvals/{approval_id}/resolution:
+    post:
+      summary: Resolve
+      operationId: mockResolveApproval
+      security:
+      - MockBrokerBearer: []
+      parameters:
+      - name: run_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Run Id
+      - name: approval_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Approval Id
+      - name: idempotency-key
+        in: header
+        required: true
+        schema:
+          type: string
+          minLength: 8
+          maxLength: 180
+          title: Idempotency-Key
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApprovalCallback'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Mockresolveapproval
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ControlProblem'
+          description: Unauthorized
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ControlProblem'
+          description: Not Found
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ControlProblem'
+          description: Conflict
+        '413':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ControlProblem'
+          description: Request Entity Too Large
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ControlProblem'
+          description: Unprocessable Entity
+        '503':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ControlProblem'
+          description: Service Unavailable
+      x-credential-role: mock broker; explicit simulation runs only; disabled by default
+  /api/v1/mock/runs/{run_id}/payment-attempts/{attempt_id}/settlement:
+    post:
+      summary: Settle
+      operationId: mockConfirmSettlement
+      security:
+      - MockBrokerBearer: []
+      parameters:
+      - name: run_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Run Id
+      - name: attempt_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Attempt Id
+      - name: idempotency-key
+        in: header
+        required: true
+        schema:
+          type: string
+          minLength: 8
+          maxLength: 180
+          title: Idempotency-Key
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SettlementCallback'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Mockconfirmsettlement
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ControlProblem'
+          description: Unauthorized
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ControlProblem'
+          description: Not Found
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ControlProblem'
+          description: Conflict
+        '413':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ControlProblem'
+          description: Request Entity Too Large
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ControlProblem'
+          description: Unprocessable Entity
+        '503':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ControlProblem'
+          description: Service Unavailable
+      x-credential-role: mock broker; explicit simulation runs only; disabled by default
+components:
+  schemas:
+    ApprovalCallback:
+      properties:
+        action_fingerprint:
+          type: string
+          pattern: ^sha256:[0-9a-f]{64}$
+          title: Action Fingerprint
+        decision:
+          type: string
+          enum:
+          - approved
+          - denied
+          title: Decision
+      additionalProperties: false
+      type: object
+      required:
+      - action_fingerprint
+      - decision
+      title: ApprovalCallback
+    ControlProblem:
+      properties:
+        code:
+          type: string
+          title: Code
+        message:
+          type: string
+          title: Message
+        correlation_id:
+          type: string
+          format: uuid
+          title: Correlation Id
+      additionalProperties: false
+      type: object
+      required:
+      - code
+      - message
+      - correlation_id
+      title: ControlProblem
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    RunCreate:
+      properties:
+        name:
+          type: string
+          maxLength: 150
+          minLength: 1
+          title: Name
+        mode:
+          type: string
+          enum:
+          - observe
+          - control
+          title: Mode
+        external_run_key:
+          anyOf:
+          - type: string
+            maxLength: 150
+          - type: 'null'
+          title: External Run Key
+        simulation:
+          type: boolean
+          title: Simulation
+          default: false
+      additionalProperties: false
+      type: object
+      required:
+      - name
+      - mode
+      title: RunCreate
+    SettlementCallback:
+      properties:
+        scope_fingerprint:
+          type: string
+          pattern: ^sha256:[0-9a-f]{64}$
+          title: Scope Fingerprint
+        receipt_reference:
+          type: string
+          pattern: ^mock:[A-Za-z0-9_-]{8,120}$
+          title: Receipt Reference
+      additionalProperties: false
+      type: object
+      required:
+      - scope_fingerprint
+      - receipt_reference
+      title: SettlementCallback
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+  securitySchemes:
+    HTTPBearer:
+      type: http
+      scheme: bearer
+    MockBrokerBearer:
+      type: http
+      scheme: bearer

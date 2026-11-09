@@ -1,0 +1,34 @@
+.venv/
+.env
+.env.mock
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+data/
+artifacts/
+*.egg-info/
+dist/
+node_modules/
+.next/
+*.tsbuildinfo
+playwright-report/
+test-results/
+.sites-runtime/
+
+# Local-only telemetry readback used during design review.
+design/**/source-evidence.json
+
+# Form contact details and review screenshots stay local.
+output/submission/submission-details.json
+output/submission/submission-details.md
+output/submission/private/
+
+# LaTeX sources are shareable; compiler intermediates are regenerated.
+output/submission/report/*.aux
+output/submission/report/*.bbl
+output/submission/report/*.blg
+output/submission/report/*.log
+output/submission/report/*.out
+output/submission/report/main.pdf

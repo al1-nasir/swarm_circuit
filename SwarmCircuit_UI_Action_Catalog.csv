@@ -1,0 +1,37 @@
+action_id,screen_route,control_label,kind,precondition,expected_behavior,api_or_transport,error_or_blocked_state,priority
+A001,/setup,Check connection,read,Always,Show backend readiness and version,GET /api/v1/health,Show unreachable URL + retry,P0
+A002,/setup,Observe / Control example,local,Always,Switch code example only,None,Does not change existing run mode,P0
+A003,/setup,Copy SDK snippet,local,Text visible,Copy sanitized code,Clipboard,Allow select text if clipboard fails,P0
+A004,/setup,Refresh runs,read,Configured project,Load run list and reveal last run,GET /api/v1/projects/{projectId}/runs,Keep setup state if empty/error,P0
+A005,/setup,Open last run,navigation,Run exists,Open run detail graph,Next.js route,Hidden when no run exists,P0
+A006,/overview,Active workflows metric,navigation,Loaded list,Filter run listing,Next.js /workflows,Count limited to loaded page,P0
+A007,/overview,Recent incident row,navigation,Linked incident,Open incident inspector,Next.js /workflows/[runId]?incidentId=...,No phantom global count,P0
+A008,/overview,Pending approvals metric,navigation,Known run,Open payment approvals,Next.js /payments?tab=approvals,Read only,P0
+A009,/workflows,Search loaded runs,local,Run page loaded,Filter loaded rows,Client state,Label not global search,P0
+A010,/workflows,Load more,read,next_cursor exists,Append deduplicated next page,GET /api/v1/projects/{projectId}/runs?cursor=...,Inline retry on failure,P0
+A011,/workflows,View graph,navigation,Run exists,Open selected run,Next.js /workflows/[runId],404 not-found guidance,P0
+A012,/workflows/[runId],Agent / Task view,read,Run exists,Switch projection,GET /api/v1/runs/{runId}/graph?view=agent|task,Keep last snapshot on error,P0
+A013,/workflows/[runId],Fit / Zoom,local,Graph rendered,Change viewport only,React Flow,No backend mutation,P0
+A014,/workflows/[runId],Show inferred links,local,Graph rendered,Toggle inferred edges,React Flow,Clear inferred source marker,P0
+A015,/workflows/[runId],Select node or edge,local,Element exists,Inspector with evidence and selection deep link,React Flow + cached snapshot,Missing evidence displayed honestly,P0
+A016,/workflows/[runId],Open incident,read,Incident in this run,Show linked evidence panel,GET /api/v1/runs/{runId}/incidents,Preserve read-only if disconnected,P0
+A017,/workflows/[runId],Hold task,mutating,Control mode; current session; capability; supported checkpoint,"Open impact confirmation, then enqueue command",POST /api/v1/runs/{runId}/control-commands,403/409/unknown displayed; no optimistic held,P0
+A018,/workflows/[runId],Resume task,mutating,Confirmed held; prerequisites resolved; live session,"Open confirmation, enqueue resume command",POST /api/v1/runs/{runId}/control-commands,No bypass of human ASK or uncertain settlement,P0
+A019,/workflows/[runId]?tab=timeline,Agent & event filters,local,Timeline loaded,Filter current page,Client state,Indicate page-scoped filtering,P0
+A020,/workflows/[runId]?tab=timeline,Load older,read,Timeline cursor exists,Append older events by cursor,GET /api/v1/runs/{runId}/timeline,Keep partial evidence and retry,P0
+A021,/workflows/[runId]?tab=timeline,Jump to graph,navigation,Task/agent ID available,Focus selected node,Next.js tab switch,Report missing task association,P0
+A022,/incidents,Severity/type filter,local,Loaded incident subset,Filter recent in-scope incidents,Run-scoped GET incidents,Must label loaded scope,P0
+A023,/incidents,View evidence,read,Incident selected,Show IDs and source/trust labels,GET /api/v1/runs/{runId}/incidents,Inferred causality marked as inference,P0
+A024,/incidents,Acknowledge/suppress,future,Audited mutation endpoint implemented,Change incident state with auth,New endpoint not in TRD v1,Not offered in P0,P1
+A025,/payments,Approvals tab,read,Run selected,Show grouped approval keys,GET /api/v1/runs/{runId}/approvals,Studio cannot grant approval,P0
+A026,/payments,Payments tab,read,Run selected,Show sanitized decision and delivery events,GET /api/v1/runs/{runId}/payments,No secrets or automatic retry,P0
+A027,/payments,Open host approval,navigation,Trusted external approval link configured,Open host-owned approval surface,Host application URL,No Studio-side approval action,P0
+A028,/experiments/[experimentId],Load comparison,read,Existing experiment ID,Show actual trial aggregates,GET /api/v1/experiments/{id}/results,Never fabricate data,P0
+A029,/experiments/[experimentId],Export CSV,read,Existing experiment ID,Download persisted metrics,GET /api/v1/experiments/{id}/export.csv,Include seeds/protocol labels,P0
+A030,/experiments/[experimentId],Run experiment,future,Runner launch protocol exists,Start task runner with explicit cost notice,Not in TRD v1,Show CLI only in P0,P1
+A031,/settings/integrations,Copy OTLP endpoint,local,Endpoint configured,Copy sanitized URL,Clipboard,Never copy credentials,P0
+A032,/settings/integrations,View runtime capabilities,read,Session evidence available,Show registered capabilities and heartbeat,Current run/session read model,Stale session means controls disabled,P0
+A033,/settings/integrations,Configure Langfuse export,future,Optional exporter implemented,Enable secondary export independently,Not in TRD v1,Not available in P0,P1
+A034,/workflows/[runId],View command status,read,Command ID exists,Reconcile durable state after reload,PROPOSED GET /api/v1/control-commands/{commandId},TRD amendment required before shipping,P0
+A035,/workflows/[runId],Copy deep link,local,Entity selected,Copy stable route,Clipboard,No secrets in URL,P0
+A036,/workflows/[runId],Request coalescing,future,Supported checkpoint and equivalence proof,Deduplicate safe equivalent requests,Controller internal policy / future explicit action,P0 recommendation only; no force-merge,P1

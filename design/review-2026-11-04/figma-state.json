@@ -1,0 +1,131 @@
+{
+  "fileKey": "vu4V38F93GDNxAInQQM0be",
+  "sessionId": "9cf10aac-8102-4a7a-98a8-6a91daefa1ad",
+  "scope": "dashboard-review",
+  "foundation": {
+    "createdNodeIds": [
+      "5:137",
+      "5:142",
+      "5:143",
+      "5:144",
+      "5:145",
+      "5:146",
+      "5:147",
+      "5:148",
+      "5:138",
+      "5:149",
+      "5:150",
+      "5:151",
+      "5:152",
+      "5:153",
+      "5:154",
+      "5:155",
+      "5:139",
+      "5:156",
+      "5:157",
+      "5:158",
+      "5:159",
+      "5:160",
+      "5:161",
+      "5:162",
+      "5:140",
+      "5:163",
+      "5:164",
+      "5:165",
+      "5:166",
+      "5:167",
+      "5:168",
+      "5:169",
+      "5:141"
+    ],
+    "componentSetId": "5:141",
+    "nodeProps": {
+      "State=Complete": {
+        "title": "Title#5:0",
+        "owner": "Owner#5:5",
+        "status": "Status#5:10"
+      },
+      "State=Waiting": {
+        "title": "Title#5:0",
+        "owner": "Owner#5:5",
+        "status": "Status#5:10"
+      },
+      "State=Selected": {
+        "title": "Title#5:0",
+        "owner": "Owner#5:5",
+        "status": "Status#5:10"
+      },
+      "State=Neutral": {
+        "title": "Title#5:0",
+        "owner": "Owner#5:5",
+        "status": "Status#5:10"
+      }
+    },
+    "variants": [
+      {
+        "id": "5:137",
+        "name": "State=Complete"
+      },
+      {
+        "id": "5:138",
+        "name": "State=Waiting"
+      },
+      {
+        "id": "5:139",
+        "name": "State=Selected"
+      },
+      {
+        "id": "5:140",
+        "name": "State=Neutral"
+      }
+    ],
+    "collectionId": "VariableCollectionId:5:102",
+    "modes": {
+      "Light": "5:2"
+    },
+    "variables": {
+      "surface": "VariableID:5:110",
+      "chrome": "VariableID:5:111",
+      "ink": "VariableID:5:112",
+      "muted": "VariableID:5:113",
+      "line": "VariableID:5:114",
+      "waitbg": "VariableID:5:115",
+      "waitink": "VariableID:5:116",
+      "good": "VariableID:5:117",
+      "bad": "VariableID:5:118",
+      "space4": "VariableID:5:119",
+      "space8": "VariableID:5:120",
+      "space12": "VariableID:5:121",
+      "space16": "VariableID:5:122",
+      "space24": "VariableID:5:123",
+      "canvas": "VariableID:5:124",
+      "accent": "VariableID:5:125",
+      "selected": "VariableID:5:126",
+      "edge": "VariableID:5:127",
+      "goodbg": "VariableID:5:128",
+      "dangerbg": "VariableID:5:129",
+      "focus": "VariableID:5:130"
+    },
+    "styles": {
+      "Body": "S:7f5d62e667e6db95ca52f08a36bb8a07c9f48d88,",
+      "Label": "S:01686e5a0d7b8a6af55acea1d4ea359439757117,",
+      "Caption": "S:60d7a09cbbafdaba7918885f7643ed605ea0e499,",
+      "Title": "S:94c6905fcb1d0586ed17dc4bbf92bc0a6be1564e,",
+      "Section": "S:2fbbfc26a0f7d46a939789282593375535a14198,",
+      "Mono": "S:739d10ed19f5eba884ee8a1dae1737a37fa66fc7,"
+    },
+    "primitiveIds": [
+      "VariableID:5:103",
+      "VariableID:5:104",
+      "VariableID:5:105",
+      "VariableID:5:106",
+      "VariableID:5:107",
+      "VariableID:5:108",
+      "VariableID:5:109"
+    ],
+    "counts": {
+      "variables": 21,
+      "taskStates": 4
+    }
+  }
+}

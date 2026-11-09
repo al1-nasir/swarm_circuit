@@ -1,0 +1,13 @@
+priority,outcome,target_date_2026,work,acceptance_check
+P0,Agree on the research question,Nov 5,One-sentence user/problem; freeze pre-sprint baseline,A new reader explains purpose after 30 seconds; prior work remains disclosed
+P0,Make a useful end-to-end workflow,Nov 6,"Actual analyst task, meaningful local tools and output artifacts",The independent worker runs independently of intervention and writes a checkable result
+P0,Measure intervention benefit independently,Nov 6,"Request counters, model usage if used, separate mock effect/authority ledger",Before/after counts are observed; denied/pending behavior and recovery are verified externally to controller
+P0,Evaluate the actual SDK intervention,Nov 7,Include review/delivery/recovery delay; separate simulator from runtime claims,A UI pause claim has actual runtime evidence rather than inherited simulated percentages
+P0,Keep strong and fair comparisons,Nov 7,"SDK guards alone, dedup/backoff, queue, polling queue; global pause if scoped-progress claim","Same authority access, polling budget and tools; charge overhead; retain losses"
+P0,Test reconciliation and fault limits,Nov 7,Missed updates versus incorrect graph versus stale version; pending/approved/denied states,Repair never reads hidden truth; bad authoritative graph is not magically repaired by polling
+P1,Explain the incident in human language,Nov 6-8,"Demo entry, cause/affected branch/action/outcome summary; technical details expandable",Reviewer sees why the product matters before setup code or protocol terms
+P1,Make progress and state labels honest,Nov 6-8,Total progress versus permitted completion; historical confirmation versus current liveness,A blocked workflow cannot look fully complete; an old host cannot look currently controlled
+P1,Remove experiment cold-load wait,Nov 6-8,Persist/precompute completed aggregates; maintain provenance and invalidation,Frozen recorded results load without rerunning bootstrap on the critical page request
+P1,Verify fresh-browser history,Nov 8,Run deep link in clean profile; discover policy groups from server,Group outcome is understandable without inherited browser intent storage
+P0,Write the narrow paper and review it,Nov 8,Main result + failure figure; required metadata/appendix; new weekend contribution,Claims match measured evidence and the strongest baseline; optional video demonstrates that same argument
+Defer,Broad new product features,After sprint,"Payments expansion, orchestration builder, extra dashboards, remote deployment",Resume only when required by a validated user problem

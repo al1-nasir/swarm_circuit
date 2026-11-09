@@ -1,0 +1,32 @@
+{
+  "title": "SwarmCircuit: Checking Agent Handoffs Against Source State",
+  "author": "Muhammad Ali Nasir",
+  "affiliation": "Independent researcher, Islamabad, Pakistan",
+  "abstract_words": 204,
+  "main_pages": 6,
+  "references_pages": 1,
+  "appendix_pages": 2,
+  "total_pages": 9,
+  "pdf_bytes": 103347,
+  "pdf_sha256": "640d0f342cd59f1284f752c79bcf7533958344494d50312130b2d621f6c7c8d4",
+  "all_pages_visually_inspected": true,
+  "compile_warnings": 0,
+  "overfull_boxes": 0,
+  "official_template": "https://docs.google.com/document/d/1_1_27EyZriMlc8n8EBE2YScaeyMjm-8xjR097nmHXAE/copy?usp=sharing",
+  "format": "LaTeX adaptation: Letter, 1-inch margins, Arial11,1.15spacing; TeXGyreTermes title serif substitution",
+  "status": "Report submitted; official website confirmation observed. Confirmation email not checked.",
+  "evidence": {
+    "actual_provider_cases": 1,
+    "actual_model_calls": 2,
+    "backend_tests": 208,
+    "frontend_unit_tests": 18,
+    "gateway_integration_tests": 6,
+    "focused_backend_cases": 37
+  },
+  "submission": {
+    "official_website_confirmed": true,
+    "confirmed_at_pakistan": "2026-11-09T14:56:00+05:00",
+    "email_receipt_checked": false,
+    "code_repository_visibility": "private_pending_release"
+  }
+}

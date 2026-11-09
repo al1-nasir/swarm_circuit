@@ -1,0 +1,1000 @@
+openapi: 3.1.0
+info:
+  title: SwarmCircuit research protocol supplement
+  version: 0.6.0
+  description: Read-only research evidence plus bounded local CLI recording. Does
+    not launch paid provider requests. Original target contract unchanged.
+paths:
+  /api/v1/experiments:
+    post:
+      summary: Create
+      operationId: createResearchExperiment
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateExperiment'
+        required: true
+      responses:
+        '201':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                additionalProperties: true
+                type: object
+                title: Response Createresearchexperiment
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - HTTPBearer: []
+      x-credential-role: operator; bounded local recording
+  /api/v1/experiments/{experiment_id}/trials:
+    post:
+      summary: Record
+      operationId: recordResearchTrial
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: experiment_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Experiment Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TrialRequest'
+      responses:
+        '201':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Recordresearchtrial
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      x-credential-role: operator; bounded local recording
+    get:
+      summary: Trials
+      operationId: listResearchTrials
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: experiment_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Experiment Id
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 200
+          minimum: 1
+          default: 100
+          title: Limit
+      - name: cursor
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Cursor
+      - name: scenario
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+            maxLength: 50
+          - type: 'null'
+          title: Scenario
+      - name: arm
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+            maxLength: 50
+          - type: 'null'
+          title: Arm
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Listresearchtrials
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      x-credential-role: SDK project or operator; project scoped
+  /api/v1/projects/{project_id}/experiments:
+    get:
+      summary: Experiments
+      operationId: listResearchExperiments
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: project_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Project Id
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 50
+          minimum: 1
+          default: 25
+          title: Limit
+      - name: cursor
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Cursor
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Listresearchexperiments
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      x-credential-role: SDK project or operator; project scoped
+  /api/v1/experiments/{experiment_id}/results:
+    get:
+      summary: Results
+      operationId: getResearchResults
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: experiment_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Experiment Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Getresearchresults
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      x-credential-role: SDK project or operator; project scoped
+  /api/v1/experiments/{experiment_id}/export.csv:
+    get:
+      summary: Csv
+      operationId: exportResearchCSV
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: experiment_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Experiment Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      x-credential-role: SDK project or operator; project scoped
+  /api/v1/experiments/{experiment_id}/trials/{trial_id}/{artifact}:
+    get:
+      summary: Artifact
+      operationId: getResearchArtifact
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: experiment_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Experiment Id
+      - name: trial_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Trial Id
+      - name: artifact
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Artifact
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      x-credential-role: SDK project or operator; project scoped
+components:
+  schemas:
+    Ack:
+      properties:
+        runtime_session_id:
+          type: string
+          format: uuid
+          title: Runtime Session Id
+        fencing_epoch:
+          type: integer
+          minimum: 1.0
+          title: Fencing Epoch
+        ack_key:
+          type: string
+          maxLength: 180
+          minLength: 8
+          title: Ack Key
+        result:
+          type: string
+          enum:
+          - applied
+          - rejected
+          - failed
+          title: Result
+        result_detail:
+          anyOf:
+          - type: string
+            maxLength: 250
+          - type: 'null'
+          title: Result Detail
+      additionalProperties: false
+      type: object
+      required:
+      - runtime_session_id
+      - fencing_epoch
+      - ack_key
+      - result
+      title: Ack
+    ApprovalCallback:
+      properties:
+        action_fingerprint:
+          type: string
+          pattern: ^sha256:[0-9a-f]{64}$
+          title: Action Fingerprint
+        decision:
+          type: string
+          enum:
+          - approved
+          - denied
+          title: Decision
+      additionalProperties: false
+      type: object
+      required:
+      - action_fingerprint
+      - decision
+      title: ApprovalCallback
+    Backpressure:
+      properties:
+        expected_preview_sha256:
+          anyOf:
+          - type: string
+            pattern: ^[0-9a-f]{64}$
+          - type: 'null'
+          title: Expected Preview Sha256
+        approval_id:
+          type: string
+          format: uuid
+          title: Approval Id
+        apply:
+          type: boolean
+          title: Apply
+          default: false
+        reason:
+          type: string
+          maxLength: 1000
+          minLength: 1
+          title: Reason
+      additionalProperties: false
+      type: object
+      required:
+      - approval_id
+      - reason
+      title: Backpressure
+    CheckpointEnter:
+      properties:
+        task_id:
+          type: string
+          format: uuid
+          title: Task Id
+        checkpoint_key:
+          type: string
+          maxLength: 180
+          minLength: 16
+          title: Checkpoint Key
+        label:
+          type: string
+          maxLength: 150
+          minLength: 1
+          title: Label
+        reversible:
+          type: boolean
+          const: true
+          title: Reversible
+      additionalProperties: false
+      type: object
+      required:
+      - task_id
+      - checkpoint_key
+      - label
+      - reversible
+      title: CheckpointEnter
+    CommandBatch:
+      properties:
+        commands:
+          items:
+            $ref: '#/components/schemas/CommandRecord'
+          type: array
+          title: Commands
+      additionalProperties: false
+      type: object
+      required:
+      - commands
+      title: CommandBatch
+    CommandRecord:
+      properties:
+        command_id:
+          type: string
+          format: uuid
+          title: Command Id
+        command_kind:
+          type: string
+          enum:
+          - hold_task
+          - resume_task
+          - cancel_task
+          - coalesce_approval
+          title: Command Kind
+        state:
+          type: string
+          enum:
+          - queued
+          - dispatched
+          - applied
+          - rejected
+          - timed_out
+          - unknown
+          title: State
+        runtime_session_id:
+          type: string
+          format: uuid
+          title: Runtime Session Id
+        session_fencing_epoch:
+          type: integer
+          minimum: 1.0
+          title: Session Fencing Epoch
+        task_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          title: Task Id
+        checkpoint_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          title: Checkpoint Id
+        created_at_ms:
+          type: integer
+          title: Created At Ms
+        acknowledgements:
+          items:
+            additionalProperties: true
+            type: object
+          type: array
+          title: Acknowledgements
+      additionalProperties: true
+      type: object
+      required:
+      - command_id
+      - command_kind
+      - state
+      - runtime_session_id
+      - session_fencing_epoch
+      - task_id
+      - checkpoint_id
+      - created_at_ms
+      - acknowledgements
+      title: CommandRecord
+    CommandRequest:
+      properties:
+        command_kind:
+          type: string
+          enum:
+          - hold_task
+          - resume_task
+          title: Command Kind
+        runtime_session_id:
+          type: string
+          format: uuid
+          title: Runtime Session Id
+        task_id:
+          type: string
+          format: uuid
+          title: Task Id
+        incident_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          title: Incident Id
+        approval_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          title: Approval Id
+        expected_task_version:
+          type: integer
+          minimum: 0.0
+          title: Expected Task Version
+        reason:
+          type: string
+          maxLength: 1000
+          minLength: 1
+          title: Reason
+      additionalProperties: false
+      type: object
+      required:
+      - command_kind
+      - runtime_session_id
+      - task_id
+      - expected_task_version
+      - reason
+      title: CommandRequest
+    ControlProblem:
+      properties:
+        code:
+          type: string
+          title: Code
+        message:
+          type: string
+          title: Message
+        correlation_id:
+          type: string
+          format: uuid
+          title: Correlation Id
+      additionalProperties: false
+      type: object
+      required:
+      - code
+      - message
+      - correlation_id
+      title: ControlProblem
+    CreateExperiment:
+      properties:
+        experiment_id:
+          type: string
+          format: uuid
+          title: Experiment Id
+        title:
+          type: string
+          maxLength: 150
+          minLength: 1
+          title: Title
+        protocol:
+          $ref: '#/components/schemas/Protocol'
+        implementation_sha:
+          type: string
+          pattern: ^[0-9a-f]{64}$
+          title: Implementation Sha
+        source_kind:
+          type: string
+          pattern: ^(synthetic|llm_workload_replay)$
+          title: Source Kind
+          default: synthetic
+      additionalProperties: false
+      type: object
+      required:
+      - experiment_id
+      - title
+      - protocol
+      - implementation_sha
+      title: CreateExperiment
+    DemoDecision:
+      properties:
+        decision:
+          type: string
+          enum:
+          - approved
+          - denied
+          title: Decision
+        reason:
+          type: string
+          maxLength: 1000
+          minLength: 1
+          title: Reason
+      additionalProperties: false
+      type: object
+      required:
+      - decision
+      - reason
+      title: DemoDecision
+    EventBatch:
+      properties:
+        events:
+          items:
+            $ref: '#/components/schemas/LifecycleEvent'
+          type: array
+          maxItems: 250
+          minItems: 1
+          title: Events
+      additionalProperties: false
+      type: object
+      required:
+      - events
+      title: EventBatch
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    LifecycleEvent:
+      properties:
+        event_id:
+          type: string
+          format: uuid
+          title: Event Id
+        source_event_key:
+          type: string
+          maxLength: 180
+          minLength: 1
+          title: Source Event Key
+        event_kind:
+          type: string
+          maxLength: 100
+          minLength: 1
+          title: Event Kind
+        occurred_at_ms:
+          type: integer
+          maximum: 9.223372036854776e+18
+          minimum: 0.0
+          title: Occurred At Ms
+        agent_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          title: Agent Id
+        task_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          title: Task Id
+        approval_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          title: Approval Id
+        payload:
+          additionalProperties: true
+          type: object
+          title: Payload
+      additionalProperties: false
+      type: object
+      required:
+      - event_id
+      - source_event_key
+      - event_kind
+      - occurred_at_ms
+      - payload
+      title: LifecycleEvent
+    ModelProvenance:
+      properties:
+        model:
+          type: string
+          maxLength: 100
+          title: Model
+          default: none
+        provider_host:
+          type: string
+          maxLength: 150
+          pattern: ^[a-zA-Z0-9.:-]+$
+          title: Provider Host
+          default: none
+        calls:
+          type: integer
+          maximum: 60.0
+          minimum: 0.0
+          title: Calls
+          default: 0
+        input_tokens:
+          anyOf:
+          - type: integer
+            minimum: 0.0
+          - type: 'null'
+          title: Input Tokens
+        output_tokens:
+          anyOf:
+          - type: integer
+            minimum: 0.0
+          - type: 'null'
+          title: Output Tokens
+        transcript_sha256:
+          anyOf:
+          - type: string
+            pattern: ^[0-9a-f]{64}$
+          - type: 'null'
+          title: Transcript Sha256
+        limitation:
+          type: string
+          maxLength: 500
+          title: Limitation
+          default: Synthetic actors; no LLM calls.
+      additionalProperties: false
+      type: object
+      title: ModelProvenance
+    Presentation:
+      properties:
+        event_id:
+          type: string
+          format: uuid
+          title: Event Id
+      additionalProperties: false
+      type: object
+      required:
+      - event_id
+      title: Presentation
+    PresentationResult:
+      properties:
+        state:
+          type: string
+          enum:
+          - presented
+          - unknown
+          title: State
+      additionalProperties: false
+      type: object
+      required:
+      - state
+      title: PresentationResult
+    Proposal:
+      properties:
+        tick:
+          type: integer
+          maximum: 120.0
+          minimum: 0.0
+          title: Tick
+        task:
+          type: string
+          pattern: ^(access|research|validate|report|public)$
+          title: Task
+        action:
+          type: string
+          pattern: ^(attempt|wait)$
+          title: Action
+      additionalProperties: false
+      type: object
+      required:
+      - tick
+      - task
+      - action
+      title: Proposal
+    Protocol:
+      properties:
+        version:
+          type: string
+          const: coordination-cascades-v1
+          title: Version
+          default: coordination-cascades-v1
+        scenarios:
+          items:
+            type: string
+          type: array
+          maxItems: 9
+          minItems: 1
+          title: Scenarios
+        arms:
+          items:
+            type: string
+          type: array
+          maxItems: 8
+          minItems: 1
+          title: Arms
+        seeds:
+          items:
+            type: integer
+          type: array
+          maxItems: 100
+          minItems: 1
+          title: Seeds
+        horizon_ticks:
+          type: integer
+          maximum: 120.0
+          minimum: 40.0
+          title: Horizon Ticks
+          default: 60
+        retry_cap:
+          type: integer
+          maximum: 10.0
+          minimum: 1.0
+          title: Retry Cap
+          default: 3
+        global_per_tick:
+          type: integer
+          maximum: 5.0
+          minimum: 1.0
+          title: Global Per Tick
+          default: 2
+        intervention_threshold:
+          type: integer
+          maximum: 10.0
+          minimum: 2.0
+          title: Intervention Threshold
+          default: 3
+        work_weights:
+          prefixItems:
+          - type: integer
+          - type: integer
+          - type: integer
+          type: array
+          maxItems: 3
+          minItems: 3
+          title: Work Weights
+          default:
+          - 1
+          - 3
+          - 10
+      additionalProperties: false
+      type: object
+      title: Protocol
+    Registration:
+      properties:
+        runtime_key:
+          type: string
+          maxLength: 150
+          minLength: 1
+          title: Runtime Key
+        client_nonce:
+          type: string
+          maxLength: 180
+          minLength: 16
+          title: Client Nonce
+        capabilities:
+          items:
+            type: string
+            enum:
+            - hold_task
+            - resume_task
+          type: array
+          maxItems: 2
+          minItems: 1
+          title: Capabilities
+      additionalProperties: false
+      type: object
+      required:
+      - runtime_key
+      - client_nonce
+      - capabilities
+      title: Registration
+    RunCreate:
+      properties:
+        name:
+          type: string
+          maxLength: 150
+          minLength: 1
+          title: Name
+        mode:
+          type: string
+          enum:
+          - observe
+          - control
+          title: Mode
+        external_run_key:
+          anyOf:
+          - type: string
+            maxLength: 150
+          - type: 'null'
+          title: External Run Key
+        simulation:
+          type: boolean
+          title: Simulation
+          default: false
+      additionalProperties: false
+      type: object
+      required:
+      - name
+      - mode
+      title: RunCreate
+    RuntimeRegistered:
+      properties:
+        runtime_session_id:
+          type: string
+          format: uuid
+          title: Runtime Session Id
+        fencing_epoch:
+          type: integer
+          minimum: 1.0
+          title: Fencing Epoch
+        session_token:
+          type: string
+          title: Session Token
+          description: Secret; SDK registration response only
+        expires_at_ms:
+          type: integer
+          title: Expires At Ms
+      additionalProperties: false
+      type: object
+      required:
+      - runtime_session_id
+      - fencing_epoch
+      - session_token
+      - expires_at_ms
+      title: RuntimeRegistered
+    SettlementCallback:
+      properties:
+        scope_fingerprint:
+          type: string
+          pattern: ^sha256:[0-9a-f]{64}$
+          title: Scope Fingerprint
+        receipt_reference:
+          type: string
+          pattern: ^mock:[A-Za-z0-9_-]{8,120}$
+          title: Receipt Reference
+      additionalProperties: false
+      type: object
+      required:
+      - scope_fingerprint
+      - receipt_reference
+      title: SettlementCallback
+    StartDemo:
+      properties: {}
+      additionalProperties: false
+      type: object
+      title: StartDemo
+    TrialRequest:
+      properties:
+        scenario:
+          type: string
+          maxLength: 50
+          title: Scenario
+        arm:
+          type: string
+          maxLength: 50
+          title: Arm
+        seed:
+          type: integer
+          exclusiveMaximum: 2147483648.0
+          minimum: 0.0
+          title: Seed
+        expected_artifact_sha256:
+          anyOf:
+          - type: string
+            pattern: ^[0-9a-f]{64}$
+          - type: 'null'
+          title: Expected Artifact Sha256
+        proposals:
+          anyOf:
+          - items:
+              $ref: '#/components/schemas/Proposal'
+            type: array
+            maxItems: 300
+          - type: 'null'
+          title: Proposals
+        provenance:
+          $ref: '#/components/schemas/ModelProvenance'
+        failure_code:
+          anyOf:
+          - type: string
+            pattern: ^(provider_unavailable|budget_exhausted|invalid_model_output|runner_failure)$
+          - type: 'null'
+          title: Failure Code
+      additionalProperties: false
+      type: object
+      required:
+      - scenario
+      - arm
+      - seed
+      title: TrialRequest
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+  securitySchemes:
+    HTTPBearer:
+      type: http
+      scheme: bearer
+    RuntimeSessionBearer:
+      type: http
+      scheme: bearer
+    MockBrokerBearer:
+      type: http
+      scheme: bearer

@@ -1,0 +1,96 @@
+{
+  "stage": "Initial five compositions, before successful neutral-surface refinement",
+  "structuralReadback": [
+    {
+      "id": "6:135",
+      "name": "01 · Workflow / Overview",
+      "descendants": 263,
+      "types": {
+        "FRAME": 91,
+        "VECTOR": 89,
+        "TEXT": 58,
+        "INSTANCE": 15,
+        "ELLIPSE": 10
+      },
+      "images": [],
+      "fontFamilies": [
+        "Inter",
+        "JetBrains Mono"
+      ],
+      "boundNodes": 212
+    },
+    {
+      "id": "6:405",
+      "name": "02 · Workflow / Selected task",
+      "descendants": 298,
+      "types": {
+        "FRAME": 107,
+        "VECTOR": 89,
+        "TEXT": 73,
+        "INSTANCE": 19,
+        "ELLIPSE": 10
+      },
+      "images": [],
+      "fontFamilies": [
+        "Inter",
+        "JetBrains Mono"
+      ],
+      "boundNodes": 247
+    },
+    {
+      "id": "6:716",
+      "name": "03 · Payment evidence",
+      "descendants": 245,
+      "types": {
+        "FRAME": 105,
+        "VECTOR": 54,
+        "TEXT": 77,
+        "INSTANCE": 9
+      },
+      "images": [],
+      "fontFamilies": [
+        "Inter",
+        "JetBrains Mono"
+      ],
+      "boundNodes": 205
+    },
+    {
+      "id": "6:974",
+      "name": "04 · Timeline / Source evidence",
+      "descendants": 267,
+      "types": {
+        "FRAME": 113,
+        "VECTOR": 56,
+        "TEXT": 86,
+        "INSTANCE": 12
+      },
+      "images": [],
+      "fontFamilies": [
+        "Inter",
+        "JetBrains Mono"
+      ],
+      "boundNodes": 232
+    },
+    {
+      "id": "6:1254",
+      "name": "05 · Responsive / Task list",
+      "descendants": 112,
+      "types": {
+        "FRAME": 53,
+        "VECTOR": 30,
+        "TEXT": 23,
+        "INSTANCE": 6
+      },
+      "images": [],
+      "fontFamilies": [
+        "Inter"
+      ],
+      "boundNodes": 89
+    }
+  ],
+  "visualReview": "All five initial PNGs were opened and inspected; connector paths and text were visible.",
+  "latestMutation": "Succeeded: lighter chrome, softened dividers, active-tab color, button typography, stronger connector contrast.",
+  "latestRender": "Blocked by Figma Starter MCP call quota.",
+  "additionalFrames": "Not created; raw local telemetry upload rejected, sanitized fixture retry blocked by quota.",
+  "applicationUIChanged": false
+}

@@ -1,0 +1,431 @@
+openapi: 3.1.0
+info:
+  title: SwarmCircuit guided workspace supplement
+  version: 0.8.0
+  description: Source-bound progress, connected-host summaries and durable control
+    history. Guided workflows run bounded local fixtures through actual SDK checkpoints.
+    Fixture mode makes no model calls. Explicit live mode permits a writer, reviewer
+    and at most one repair over sample data, with three calls maximum. Demo permission
+    decisions cannot authorize other workflows, real payments or production approvals.
+paths:
+  /api/v1/runs/{run_id}/brief:
+    get:
+      summary: Run Brief
+      operationId: getWorkflowBrief
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: run_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Run Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Getworkflowbrief
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      x-credential-role: SDK project or operator
+  /api/v1/projects/{project_id}/workspace:
+    get:
+      summary: Workspace
+      operationId: getWorkspaceSummary
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: project_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Project Id
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 50
+          minimum: 1
+          default: 20
+          title: Limit
+      - name: include_diagnostics
+        in: query
+        required: false
+        schema:
+          type: boolean
+          default: false
+          title: Include Diagnostics
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Getworkspacesummary
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      x-credential-role: SDK project or operator
+  /api/v1/runs/{run_id}/backpressure/history:
+    get:
+      summary: Policy History
+      operationId: listBackpressureHistory
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: run_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Run Id
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 100
+          minimum: 1
+          default: 25
+          title: Limit
+      - name: cursor
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Cursor
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Listbackpressurehistory
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      x-credential-role: SDK project or operator
+  /api/v1/projects/{project_id}/demo-capabilities:
+    get:
+      summary: Capabilities
+      operationId: getGuidedWorkflowCapabilities
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: project_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Project Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Getguidedworkflowcapabilities
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      x-credential-role: SDK project or operator
+  /api/v1/projects/{project_id}/demos:
+    get:
+      summary: Recent
+      operationId: listGuidedWorkflows
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: project_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Project Id
+      - name: key
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+            minLength: 8
+            maxLength: 180
+          - type: 'null'
+          title: Key
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Listguidedworkflows
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      x-credential-role: SDK project or operator
+    post:
+      summary: Start
+      operationId: startGuidedWorkflow
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: project_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Project Id
+      - name: idempotency-key
+        in: header
+        required: true
+        schema:
+          type: string
+          minLength: 8
+          maxLength: 180
+          title: Idempotency-Key
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StartDemo'
+      responses:
+        '201':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Startguidedworkflow
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      x-credential-role: operator; owned demo only
+  /api/v1/demos/{demo_id}:
+    get:
+      summary: Detail
+      operationId: getGuidedWorkflow
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: demo_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Demo Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Getguidedworkflow
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      x-credential-role: SDK project or operator
+  /api/v1/demos/{demo_id}/decision:
+    post:
+      summary: Decision
+      operationId: resolveGuidedFixturePermission
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: demo_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Demo Id
+      - name: idempotency-key
+        in: header
+        required: true
+        schema:
+          type: string
+          minLength: 8
+          maxLength: 180
+          title: Idempotency-Key
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DemoDecision'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Resolveguidedfixturepermission
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      x-credential-role: operator; owned demo only
+  /api/v1/demos/{demo_id}/artifacts/{slug}:
+    get:
+      summary: Output
+      operationId: getGuidedWorkflowOutput
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: demo_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Demo Id
+      - name: slug
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Slug
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      x-credential-role: SDK project or operator
+components:
+  schemas:
+    DemoDecision:
+      properties:
+        decision:
+          type: string
+          enum:
+          - approved
+          - denied
+          title: Decision
+        reason:
+          type: string
+          maxLength: 1000
+          minLength: 1
+          title: Reason
+      additionalProperties: false
+      type: object
+      required:
+      - decision
+      - reason
+      title: DemoDecision
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    StartDemo:
+      properties:
+        mode:
+          type: string
+          enum:
+          - fixture
+          - live
+          title: Mode
+          default: fixture
+      additionalProperties: false
+      type: object
+      title: StartDemo
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+  securitySchemes:
+    HTTPBearer:
+      type: http
+      scheme: bearer
+    RuntimeSessionBearer:
+      type: http
+      scheme: bearer
+    MockBrokerBearer:
+      type: http
+      scheme: bearer

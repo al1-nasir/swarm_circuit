@@ -1,0 +1,1467 @@
+openapi: 3.1.0
+info:
+  title: SwarmCircuit implemented control protocol supplement
+  version: 0.5.0
+  description: Phase 3 protocol with Phase 5 durable history; original openapi.yaml
+    is frozen. Only hold/resume at explicitly owned reversible checkpoints are supported.
+    Task ID is mandatory. Credential roles are enforced by the service; runtime tokens
+    are returned only at SDK registration. See docs/decisions/0003-control.md for
+    safety and recovery semantics.
+paths:
+  /api/v1/runs/{run_id}/runtime-sessions:
+    post:
+      summary: Register
+      operationId: registerRuntime
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: run_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Run Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Registration'
+      responses:
+        '201':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RuntimeRegistered'
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ControlProblem'
+          description: Unauthorized
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ControlProblem'
+          description: Forbidden
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ControlProblem'
+          description: Not Found
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ControlProblem'
+          description: Conflict
+        '413':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ControlProblem'
+          description: Request Entity Too Large
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ControlProblem'
+          description: Unprocessable Entity
+        '503':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ControlProblem'
+          description: Service Unavailable
+      x-credential-role: SDK project
+    get:
+      summary: Sessions
+      operationId: listRuntimeSessions
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: run_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Run Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Listruntimesessions
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ControlProblem'
+          description: Unauthorized
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ControlProblem'
+          description: Forbidden
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ControlProblem'
+          description: Not Found
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ControlProblem'
+          description: Conflict
+        '413':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ControlProblem'
+          description: Request Entity Too Large
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ControlProblem'
+          description: Unprocessable Entity
+        '503':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ControlProblem'
+          description: Service Unavailable
+      x-credential-role: SDK project or operator
+  /api/v1/runtime-sessions/{session_id}/heartbeat:
+    post:
+      summary: Heartbeat
+      operationId: runtimeHeartbeat
+      security:
+      - RuntimeSessionBearer: []
+      parameters:
+      - name: session_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Session Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Runtimeheartbeat
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ControlProblem'
+          description: Unauthorized
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ControlProblem'
+          description: Forbidden
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ControlProblem'
+          description: Not Found
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ControlProblem'
+          description: Conflict
+        '413':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ControlProblem'
+          description: Request Entity Too Large
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ControlProblem'
+          description: Unprocessable Entity
+        '503':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ControlProblem'
+          description: Service Unavailable
+      x-credential-role: runtime session
+  /api/v1/runtime-sessions/{session_id}/commands:
+    get:
+      summary: Poll
+      operationId: pollCommands
+      security:
+      - RuntimeSessionBearer: []
+      parameters:
+      - name: session_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Session Id
+      - name: wait_ms
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 20000
+          minimum: 0
+          default: 10000
+          title: Wait Ms
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CommandBatch'
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ControlProblem'
+          description: Unauthorized
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ControlProblem'
+          description: Forbidden
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ControlProblem'
+          description: Not Found
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ControlProblem'
+          description: Conflict
+        '413':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ControlProblem'
+          description: Request Entity Too Large
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ControlProblem'
+          description: Unprocessable Entity
+        '503':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ControlProblem'
+          description: Service Unavailable
+      x-credential-role: runtime session
+  /api/v1/runtime-sessions/{session_id}/checkpoints:
+    post:
+      summary: Enter
+      operationId: enterCheckpoint
+      security:
+      - RuntimeSessionBearer: []
+      parameters:
+      - name: session_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Session Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CheckpointEnter'
+      responses:
+        '201':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Entercheckpoint
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ControlProblem'
+          description: Unauthorized
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ControlProblem'
+          description: Forbidden
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ControlProblem'
+          description: Not Found
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ControlProblem'
+          description: Conflict
+        '413':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ControlProblem'
+          description: Request Entity Too Large
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ControlProblem'
+          description: Unprocessable Entity
+        '503':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ControlProblem'
+          description: Service Unavailable
+      x-credential-role: runtime session
+  /api/v1/runtime-sessions/{session_id}/checkpoints/{checkpoint_id}:
+    get:
+      summary: Checkpoint
+      operationId: getCheckpoint
+      security:
+      - RuntimeSessionBearer: []
+      parameters:
+      - name: checkpoint_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Checkpoint Id
+      - name: session_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Session Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Getcheckpoint
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ControlProblem'
+          description: Unauthorized
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ControlProblem'
+          description: Forbidden
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ControlProblem'
+          description: Not Found
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ControlProblem'
+          description: Conflict
+        '413':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ControlProblem'
+          description: Request Entity Too Large
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ControlProblem'
+          description: Unprocessable Entity
+        '503':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ControlProblem'
+          description: Service Unavailable
+      x-credential-role: runtime session
+  /api/v1/runtime-sessions/{session_id}/checkpoints/{checkpoint_id}/leave:
+    post:
+      summary: Leave
+      operationId: leaveCheckpoint
+      security:
+      - RuntimeSessionBearer: []
+      parameters:
+      - name: checkpoint_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Checkpoint Id
+      - name: session_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Session Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Leavecheckpoint
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ControlProblem'
+          description: Unauthorized
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ControlProblem'
+          description: Forbidden
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ControlProblem'
+          description: Not Found
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ControlProblem'
+          description: Conflict
+        '413':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ControlProblem'
+          description: Request Entity Too Large
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ControlProblem'
+          description: Unprocessable Entity
+        '503':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ControlProblem'
+          description: Service Unavailable
+      x-credential-role: runtime session
+  /api/v1/runs/{run_id}/control-commands:
+    post:
+      summary: Enqueue
+      operationId: enqueueControlCommand
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: run_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Run Id
+      - name: idempotency-key
+        in: header
+        required: true
+        schema:
+          type: string
+          minLength: 8
+          maxLength: 180
+          title: Idempotency-Key
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CommandRequest'
+      responses:
+        '202':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CommandRecord'
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ControlProblem'
+          description: Unauthorized
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ControlProblem'
+          description: Forbidden
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ControlProblem'
+          description: Not Found
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ControlProblem'
+          description: Conflict
+        '413':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ControlProblem'
+          description: Request Entity Too Large
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ControlProblem'
+          description: Unprocessable Entity
+        '503':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ControlProblem'
+          description: Service Unavailable
+      x-credential-role: operator
+    get:
+      summary: Commands
+      operationId: listControlCommands
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: run_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Run Id
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 200
+          minimum: 1
+          default: 50
+          title: Limit
+      - name: cursor
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Cursor
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Listcontrolcommands
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      x-credential-role: SDK project or operator
+  /api/v1/control-commands/{command_id}:
+    get:
+      summary: Get Command
+      operationId: getControlCommand
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: command_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Command Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CommandRecord'
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ControlProblem'
+          description: Unauthorized
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ControlProblem'
+          description: Forbidden
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ControlProblem'
+          description: Not Found
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ControlProblem'
+          description: Conflict
+        '413':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ControlProblem'
+          description: Request Entity Too Large
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ControlProblem'
+          description: Unprocessable Entity
+        '503':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ControlProblem'
+          description: Service Unavailable
+      x-credential-role: SDK project or operator
+  /api/v1/control-commands/{command_id}/ack:
+    post:
+      summary: Ack
+      operationId: acknowledgeCommand
+      security:
+      - RuntimeSessionBearer: []
+      parameters:
+      - name: command_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Command Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Ack'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CommandRecord'
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ControlProblem'
+          description: Unauthorized
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ControlProblem'
+          description: Forbidden
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ControlProblem'
+          description: Not Found
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ControlProblem'
+          description: Conflict
+        '413':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ControlProblem'
+          description: Request Entity Too Large
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ControlProblem'
+          description: Unprocessable Entity
+        '503':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ControlProblem'
+          description: Service Unavailable
+      x-credential-role: runtime session
+  /api/v1/runs/{run_id}/backpressure:
+    post:
+      summary: Backpressure
+      operationId: requestBackpressure
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: run_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Run Id
+      - name: idempotency-key
+        in: header
+        required: true
+        schema:
+          type: string
+          minLength: 8
+          maxLength: 180
+          title: Idempotency-Key
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Backpressure'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Requestbackpressure
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ControlProblem'
+          description: Unauthorized
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ControlProblem'
+          description: Forbidden
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ControlProblem'
+          description: Not Found
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ControlProblem'
+          description: Conflict
+        '413':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ControlProblem'
+          description: Request Entity Too Large
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ControlProblem'
+          description: Unprocessable Entity
+        '503':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ControlProblem'
+          description: Service Unavailable
+      x-credential-role: operator
+    get:
+      summary: Policy Request
+      operationId: getBackpressureRequest
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: run_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Run Id
+      - name: key
+        in: query
+        required: true
+        schema:
+          type: string
+          minLength: 8
+          maxLength: 180
+          title: Key
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Getbackpressurerequest
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ControlProblem'
+          description: Unauthorized
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ControlProblem'
+          description: Forbidden
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ControlProblem'
+          description: Not Found
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ControlProblem'
+          description: Conflict
+        '413':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ControlProblem'
+          description: Request Entity Too Large
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ControlProblem'
+          description: Unprocessable Entity
+        '503':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ControlProblem'
+          description: Service Unavailable
+      x-credential-role: SDK project or operator
+  /api/v1/runtime-sessions/{session_id}/approval-presentations:
+    post:
+      summary: Present
+      operationId: claimApprovalPresentation
+      security:
+      - RuntimeSessionBearer: []
+      parameters:
+      - name: session_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Session Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Presentation'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Claimapprovalpresentation
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ControlProblem'
+          description: Unauthorized
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ControlProblem'
+          description: Forbidden
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ControlProblem'
+          description: Not Found
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ControlProblem'
+          description: Conflict
+        '413':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ControlProblem'
+          description: Request Entity Too Large
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ControlProblem'
+          description: Unprocessable Entity
+        '503':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ControlProblem'
+          description: Service Unavailable
+      x-credential-role: runtime session
+  /api/v1/runtime-sessions/{session_id}/approval-presentations/{presentation_id}/result:
+    post:
+      summary: Presentation Result
+      operationId: reportApprovalPresentation
+      security:
+      - RuntimeSessionBearer: []
+      parameters:
+      - name: presentation_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Presentation Id
+      - name: session_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Session Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PresentationResult'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Reportapprovalpresentation
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ControlProblem'
+          description: Unauthorized
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ControlProblem'
+          description: Forbidden
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ControlProblem'
+          description: Not Found
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ControlProblem'
+          description: Conflict
+        '413':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ControlProblem'
+          description: Request Entity Too Large
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ControlProblem'
+          description: Unprocessable Entity
+        '503':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ControlProblem'
+          description: Service Unavailable
+      x-credential-role: runtime session
+  /api/v1/runs/{run_id}/backpressure/history:
+    get:
+      summary: Policy History
+      operationId: listBackpressureHistory
+      security:
+      - HTTPBearer: []
+      parameters:
+      - name: run_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Run Id
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 100
+          minimum: 1
+          default: 25
+          title: Limit
+      - name: cursor
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Cursor
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Listbackpressurehistory
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      x-credential-role: SDK project or operator
+components:
+  schemas:
+    Ack:
+      properties:
+        runtime_session_id:
+          type: string
+          format: uuid
+          title: Runtime Session Id
+        fencing_epoch:
+          type: integer
+          minimum: 1.0
+          title: Fencing Epoch
+        ack_key:
+          type: string
+          maxLength: 180
+          minLength: 8
+          title: Ack Key
+        result:
+          type: string
+          enum:
+          - applied
+          - rejected
+          - failed
+          title: Result
+        result_detail:
+          anyOf:
+          - type: string
+            maxLength: 250
+          - type: 'null'
+          title: Result Detail
+      additionalProperties: false
+      type: object
+      required:
+      - runtime_session_id
+      - fencing_epoch
+      - ack_key
+      - result
+      title: Ack
+    Backpressure:
+      properties:
+        expected_preview_sha256:
+          anyOf:
+          - type: string
+            pattern: ^[0-9a-f]{64}$
+          - type: 'null'
+          title: Expected Preview Sha256
+        approval_id:
+          type: string
+          format: uuid
+          title: Approval Id
+        apply:
+          type: boolean
+          title: Apply
+          default: false
+        reason:
+          type: string
+          maxLength: 1000
+          minLength: 1
+          title: Reason
+      additionalProperties: false
+      type: object
+      required:
+      - approval_id
+      - reason
+      title: Backpressure
+    CheckpointEnter:
+      properties:
+        task_id:
+          type: string
+          format: uuid
+          title: Task Id
+        checkpoint_key:
+          type: string
+          maxLength: 180
+          minLength: 16
+          title: Checkpoint Key
+        label:
+          type: string
+          maxLength: 150
+          minLength: 1
+          title: Label
+        reversible:
+          type: boolean
+          const: true
+          title: Reversible
+      additionalProperties: false
+      type: object
+      required:
+      - task_id
+      - checkpoint_key
+      - label
+      - reversible
+      title: CheckpointEnter
+    CommandBatch:
+      properties:
+        commands:
+          items:
+            $ref: '#/components/schemas/CommandRecord'
+          type: array
+          title: Commands
+      additionalProperties: false
+      type: object
+      required:
+      - commands
+      title: CommandBatch
+    CommandRecord:
+      properties:
+        command_id:
+          type: string
+          format: uuid
+          title: Command Id
+        command_kind:
+          type: string
+          enum:
+          - hold_task
+          - resume_task
+          - cancel_task
+          - coalesce_approval
+          title: Command Kind
+        state:
+          type: string
+          enum:
+          - queued
+          - dispatched
+          - applied
+          - rejected
+          - timed_out
+          - unknown
+          title: State
+        runtime_session_id:
+          type: string
+          format: uuid
+          title: Runtime Session Id
+        session_fencing_epoch:
+          type: integer
+          minimum: 1.0
+          title: Session Fencing Epoch
+        task_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          title: Task Id
+        checkpoint_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          title: Checkpoint Id
+        created_at_ms:
+          type: integer
+          title: Created At Ms
+        acknowledgements:
+          items:
+            additionalProperties: true
+            type: object
+          type: array
+          title: Acknowledgements
+      additionalProperties: true
+      type: object
+      required:
+      - command_id
+      - command_kind
+      - state
+      - runtime_session_id
+      - session_fencing_epoch
+      - task_id
+      - checkpoint_id
+      - created_at_ms
+      - acknowledgements
+      title: CommandRecord
+    CommandRequest:
+      properties:
+        command_kind:
+          type: string
+          enum:
+          - hold_task
+          - resume_task
+          title: Command Kind
+        runtime_session_id:
+          type: string
+          format: uuid
+          title: Runtime Session Id
+        task_id:
+          type: string
+          format: uuid
+          title: Task Id
+        incident_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          title: Incident Id
+        approval_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          title: Approval Id
+        expected_task_version:
+          type: integer
+          minimum: 0.0
+          title: Expected Task Version
+        reason:
+          type: string
+          maxLength: 1000
+          minLength: 1
+          title: Reason
+      additionalProperties: false
+      type: object
+      required:
+      - command_kind
+      - runtime_session_id
+      - task_id
+      - expected_task_version
+      - reason
+      title: CommandRequest
+    ControlProblem:
+      properties:
+        code:
+          type: string
+          title: Code
+        message:
+          type: string
+          title: Message
+        correlation_id:
+          type: string
+          format: uuid
+          title: Correlation Id
+      additionalProperties: false
+      type: object
+      required:
+      - code
+      - message
+      - correlation_id
+      title: ControlProblem
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    Presentation:
+      properties:
+        event_id:
+          type: string
+          format: uuid
+          title: Event Id
+      additionalProperties: false
+      type: object
+      required:
+      - event_id
+      title: Presentation
+    PresentationResult:
+      properties:
+        state:
+          type: string
+          enum:
+          - presented
+          - unknown
+          title: State
+      additionalProperties: false
+      type: object
+      required:
+      - state
+      title: PresentationResult
+    Registration:
+      properties:
+        runtime_key:
+          type: string
+          maxLength: 150
+          minLength: 1
+          title: Runtime Key
+        client_nonce:
+          type: string
+          maxLength: 180
+          minLength: 16
+          title: Client Nonce
+        capabilities:
+          items:
+            type: string
+            enum:
+            - hold_task
+            - resume_task
+          type: array
+          maxItems: 2
+          minItems: 1
+          title: Capabilities
+      additionalProperties: false
+      type: object
+      required:
+      - runtime_key
+      - client_nonce
+      - capabilities
+      title: Registration
+    RuntimeRegistered:
+      properties:
+        runtime_session_id:
+          type: string
+          format: uuid
+          title: Runtime Session Id
+        fencing_epoch:
+          type: integer
+          minimum: 1.0
+          title: Fencing Epoch
+        session_token:
+          type: string
+          title: Session Token
+          description: Secret; SDK registration response only
+        expires_at_ms:
+          type: integer
+          title: Expires At Ms
+      additionalProperties: false
+      type: object
+      required:
+      - runtime_session_id
+      - fencing_epoch
+      - session_token
+      - expires_at_ms
+      title: RuntimeRegistered
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+  securitySchemes:
+    HTTPBearer:
+      type: http
+      scheme: bearer
+    RuntimeSessionBearer:
+      type: http
+      scheme: bearer

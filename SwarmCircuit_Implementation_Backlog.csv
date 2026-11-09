@@ -1,0 +1,39 @@
+task_id,work_package,priority,target_day,deliverable,depends_on,acceptance_test,suggested_owner
+SC-001,W0,P0,D1,"Create workspace, pyproject and Next.js app",,make bootstrap installs locked dependencies,Solo / platform
+SC-002,W0,P0,D1,Apply unchanged 001_initial.sql migration,SC-001,Schema smoke test + FK guards pass,Backend
+SC-003,W0,P0,D1,FastAPI startup and health endpoint,SC-002,Health returns schema version and readiness,Backend
+SC-004,W0,P0,D1,Local scoped token and redaction config,SC-003,Wrong project source denied; no payload secrets stored,Backend
+SC-005,W1,P0,D1,OTLP protobuf parser and /v1/traces response,SC-003,Binary roundtrip + official response shape verified,Backend
+SC-006,W1,P0,D1,"OTLP JSON, gzip and size guards",SC-005,Valid mapping; 413 for oversized decompressed body,Backend
+SC-007,W1,P0,D1,Lifecycle batch event validation and storage,SC-002;SC-004,Duplicate event key has one stored effect,Backend
+SC-008,W1,P0,D1,Durable single writer + ui_outbox,SC-007,Server never ACKs before DB commit,Backend
+SC-009,W2,P0,D1,SDK RunContext/TaskContext and OTel spans,SC-005;SC-007,Custom Python agent emits trace+correlated event,SDK
+SC-010,W2,P0,D1,"Handoff, explicit dependency, retry, approval events",SC-009,Same-run validation and stable logical fingerprints,SDK
+SC-011,W2,P0,D1,Offline exporter retry/idempotency behavior,SC-010,Lost response replay does not duplicate event,SDK
+SC-012,W3,P0,D1,Canonical task and run projector,SC-007;SC-010,Out-of-order completed event cannot regress state,Backend
+SC-013,W3,P0,D1,Explicit task/agent graph versioned snapshot,SC-012,No inferred spans promoted to dependency edges,Backend
+SC-014,W3,P0,D1,Approval storm + retry amplification detector,SC-012,Evidence IDs and policy version recorded in incident,Backend
+SC-015,W3,P0,D1,Stall/dependency-cycle detector with negative controls,SC-013,Human wait and conversational loop not false deadlock,Backend
+SC-016,W6,P0,D1,Six-agent deterministic shared approval scenario,SC-010;SC-014,Reproduces cascade with independent live branch,Research
+SC-017,W6,P0,D1,B0 no controller + B3 exact-key dedup,SC-016,Paired same-seed baseline CSV generated,Research
+SC-018,W4,P0,D2,Runtime capability registration + epoch fencing,SC-012,Stale runtime session rejected,Backend
+SC-019,W4,P0,D2,Poll-based commands and idempotent enqueue,SC-018,Duplicate operator key returns one command,Backend
+SC-020,W4,P0,D2,SDK checkpoint hold/resume with runtime ACK,SC-019,Hold state only applied when checkpoint is parked,SDK
+SC-021,W4,P0,D2,Unknown outcome / stale version behavior,SC-020,Disconnect never yields fabricated Applied,Backend
+SC-022,W4,P0,D2,Dependency-aware coalescing and backpressure,SC-013;SC-020,Unrelated task remains runnable; no auto-approve,Research
+SC-023,W5,P0,D2,GateKeep402 observer adapter with metadata-only events,SC-010,ALLOW/ASK/DENY shown; no wallet or header leak,SDK
+SC-024,W5,P0,D2,Mock trusted settlement and approval callback,SC-023,Self report cannot mark settled; DENY stays blocked,Research
+SC-025,W6,P0,D2,Add B1 per-agent cap and B2 global limit,SC-017,Policy state reset and seeds reused identically,Research
+SC-026,W6,P0,D2,Add B4 backpressure and no-graph ablation,SC-022;SC-025,Paired results and graph ablation exported,Research
+SC-027,W6,P0,D2,"Compute completion, amplification, human load and cost",SC-026,"Metrics computed from truth, not self-reported events",Research
+SC-028,W6,P0,D2,"Raw JSONL, CSV, run manifest and plots",SC-027,Re-run fixtures yields exact same CSV with pinned deps,Research
+SC-029,W7,P0,D3,Runs list and run detail API integration,SC-013,One real run appears in UI from REST snapshot,Frontend
+SC-030,W7,P0,D3,"React Flow task graph, agent toggle and timeline",SC-029,Explicit vs inferred links distinguishable; waterfall correct,Frontend
+SC-031,W7,P0,D3,Incident inspector + evidence links,SC-030;SC-014,Click incident highlights source events,Frontend
+SC-032,W7,P0,D3,Hold/Resume states + WebSocket REST recovery,SC-020;SC-031,Buttons disabled observe-only; socket reconnect rehydrates,Frontend
+SC-033,W7,P1,D3,Experiment results comparison view,SC-028;SC-029,B3 vs B4 plot uses exported real values,Frontend
+SC-034,W8,P0,D3,Research report current template and truthful limits,SC-028,PDF body <= 8 pages; abstract and ethics appendix,Research
+SC-035,W8,P0,D3,Prior work registry and sprint start/submission hashes,SC-001,README labels reused GateKeep402 and old code,Research
+SC-036,W8,P0,D3,Clean install and security negative suite,SC-032;SC-028,"No unauthorized effect, clean replay, no unknown to Applied",QA
+SC-037,W8,P1,D3,Optional 3-5 minute evidence-first demo video,SC-032;SC-034,"Video explains baseline, control and real figure",Frontend
+SC-038,W8,P0,D3,Final submission and confirmation record,SC-034;SC-035;SC-036,Official form confirms title and submitted report,Research

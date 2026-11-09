@@ -1,0 +1,29 @@
+{
+  "archive": "swarmcircuit-hackathon-submission-2026-11-09.zip",
+  "archive_sha256": "0af98357a5a3f092a4baa2e5e25938bc02025dd8b307a288b61e3bbe60c6bcc1",
+  "archive_bytes": 1047145,
+  "member_count": 13,
+  "credential_scan": "passed",
+  "contact_details_excluded": true,
+  "report_visual_review": "completed",
+  "published": false,
+  "bundle_uploaded": false,
+  "report_submitted": true,
+  "official_website_confirmation_at": "2026-11-09T14:56:00+05:00",
+  "email_receipt_checked": false,
+  "members": {
+    "SUBMISSION_MANIFEST.json": "d848d3ed4f1eb5ec5d1543a200f027aa1ff34e1edf4e3f4fe95b8719ffa92eb9",
+    "SUBMISSION_README.md": "f7bc12c36238e47e234fb6d48d9c174e9fa407476b06d9fba485f4f8cab19991",
+    "demo-script.md": "de48b759724ff3a1a29ed4d0b5e429b55c816b36057d81f5a08d57195cb27bab",
+    "report/README.md": "e693214294128a60108b3496d576b25eb3068a82f1f855476595f5b67eedfac8",
+    "report/abstract.txt": "8b6130891e35106a7db1a557fcfc7d3c7103f891fb5fe34b963f8dd95cde66fb",
+    "report/author.tex": "3d2fbf95b33351ed0d243da19238d74fc5ca16dd6b62152a8f2e4754a9429215",
+    "report/main.bbl": "848bc9852b56c07146a4d040d959ec10c8948bd11d777d57966bfcebe0d2772d",
+    "report/main.tex": "2a7a7002c9201d450827460aeaa2d98a6f639110672594fd251a44699aa85190",
+    "report/references.bib": "009566808606a0aaa56d5f7781cad1ec36b7073f8e16b4c8a1676422b7cdb734",
+    "report/report-qa.json": "f23da9f69f70f3a145286a56b908a67d6750d7cad04756a3b86318a3d9119cf3",
+    "report/swarmcircuit-hackathon-report.pdf": "640d0f342cd59f1284f752c79bcf7533958344494d50312130b2d621f6c7c8d4",
+    "source/swarmcircuit-source-2026-11-09.manifest.json": "1b1aff498bc4de4333d422cb7b207a1548f2d3880db44a61c0513eb0099a2a75",
+    "source/swarmcircuit-source-2026-11-09.zip": "4a46c1354d6548407d696cf1648720ebfacb0d64eff35e706f815ce57055da98"
+  }
+}

@@ -1,0 +1,18 @@
+[build-system]
+requires = ["hatchling>=1.26"]
+build-backend = "hatchling.build"
+
+[project]
+name = "swarmcircuit-sdk"
+version = "0.5.0"
+description = "Framework-neutral SwarmCircuit telemetry and cooperative control SDK"
+requires-python = ">=3.11"
+dependencies = ["httpx>=0.27,<1", "opentelemetry-api>=1.28,<2"]
+
+[project.optional-dependencies]
+otel = ["opentelemetry-sdk>=1.28,<2", "opentelemetry-exporter-otlp-proto-http>=1.28,<2"]
+payments = ["gatekeep402==0.2.1", "openlibx402-core==0.1.1", "openlibx402-client==0.1.1"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/swarmcircuit"]
+
